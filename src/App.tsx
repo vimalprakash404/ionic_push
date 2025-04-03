@@ -1,53 +1,54 @@
-import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/Home';
+import { useEffect, useState } from "react";
+import { messaging } from "./firebaseConfig";
+import { getToken, onMessage } from "firebase/messaging";
 
-/* Core CSS required for Ionic components to work properly */
-import '@ionic/react/css/core.css';
+const App: React.FC = () => {
+  const [fcmToken, setFcmToken] = useState<string | null>(null);
 
-/* Basic CSS for apps built with Ionic */
-import '@ionic/react/css/normalize.css';
-import '@ionic/react/css/structure.css';
-import '@ionic/react/css/typography.css';
+  useEffect(() => {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        getToken(messaging, { vapidKey: "BGMq9SIzDOhYWhmiqqW87qngdV8T1rKu0UHN-v3mTEnZprxjVXDlLgv2gomE66BW_IZQ2QEDuX8ebMQEHa1o5hU" })
+          .then(token => {
+            console.log("🎉 FCM Token:", token);
+            setFcmToken(token);
+          })
+          .catch(err => console.error("❌ FCM Token Error:", err));
+      }
+    });
 
-/* Optional CSS utils that can be commented out */
-import '@ionic/react/css/padding.css';
-import '@ionic/react/css/float-elements.css';
-import '@ionic/react/css/text-alignment.css';
-import '@ionic/react/css/text-transformation.css';
-import '@ionic/react/css/flex-utils.css';
-import '@ionic/react/css/display.css';
+    onMessage(messaging, payload => {
+      console.log("📩 Foreground Message:", payload);
+      new Notification(payload.notification?.title || "New Message", {
+        body: payload.notification?.body || "You have a new notification!",
+        icon: "/logo.png",
+      });
+    });
+  }, []);
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+  const copyToClipboard = () => {
+    if (fcmToken) {
+      navigator.clipboard.writeText(fcmToken);
+      alert("FCM Token copied!");
+    }
+  };
 
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
-import '@ionic/react/css/palettes/dark.system.css';
-
-/* Theme variables */
-import './theme/variables.css';
-
-setupIonicReact();
-
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/home">
-          <Home />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/home" />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+  return (
+    <div style={{ padding: "20px", textAlign: "center" }}>
+      <h2>FCM Token</h2>
+      <textarea 
+        value={fcmToken || "Fetching token..."} 
+        readOnly 
+        rows={4} 
+        style={{ width: "100%", marginBottom: "10px" }} 
+      />
+      <br />
+      <button onClick={copyToClipboard} disabled={!fcmToken}>
+        Copy Token
+      </button>
+    </div>
+  );
+};
 
 export default App;
+
