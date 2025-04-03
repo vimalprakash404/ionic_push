@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.vimal.notifi;
 
 import com.getcapacitor.BridgeActivity;
 
