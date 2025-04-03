@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "120825688982",
+    "project_id": "notification-da466",
+    "storage_bucket": "notification-da466.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120825688982:android:2a88813972cd134d0c23b7",
+        "android_client_info": {
+          "package_name": "com.vimal.noti"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAM1JVHb240IxDs79RDo_ValO7nm4YkhdA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
